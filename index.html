@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Apotek Online Saya</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 p-8">
+    <div class="max-w-4xl mx-auto bg-white p-6 rounded-lg shadow-lg">
+        <h1 class="text-3xl font-bold text-blue-600 mb-6">Dashboard Stok Apotek</h1>
+        <div class="mb-8 bg-blue-50 p-4 rounded-lg border border-blue-200">
+            <h2 class="text-xl font-semibold mb-4 text-blue-800">Tambah Obat Baru</h2>
+            <div class="grid grid-cols-2 gap-4">
+                <input id="in-nama" type="text" placeholder="Nama Obat" class="p-2 border rounded">
+                <input id="in-stok" type="number" placeholder="Stok" class="p-2 border rounded">
+                <input id="in-satuan" type="text" placeholder="Satuan (Strip/Botol)" class="p-2 border rounded">
+                <input id="in-harga" type="number" placeholder="Harga" class="p-2 border rounded">
+            </div>
+            <button onclick="tambahObat()" class="mt-4 bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700">
+                Simpan Obat
+            </button>
+        </div>
+        <table class="w-full text-left border-collapse">
+            <thead>
+                <tr class="bg-blue-500 text-white">
+                    <th class="p-3">ID</th>
+                    <th class="p-3">Nama Obat</th>
+                    <th class="p-3">Stok</th>
+                    <th class="p-3">Satuan</th>
+                    <th class="p-3">Harga</th>
+                    <th class="p-3">Aksi</th>
+                </tr>
+            </thead>
+            <tbody id="tabel-body">
+                </tbody>
+        </table>
+    </div>
+
+    <script>
+        // Fungsi untuk mengambil data dari server Python kita
+        async function muatData() {
+            const respon = await fetch('http://127.0.0.1:8888/stok-asli');
+            const data = await respon.json();
+            const tabel = document.getElementById('tabel-body');
+            
+            data.forEach(obat => {
+                tabel.innerHTML += `
+                    <tr class="border-b">
+                        <td class="p-3">${obat.id}</td>
+                        <td class="p-3 font-semibold">${obat.nama}</td>
+                        <td class="p-3">${obat.stok}</td>
+                        <td class="p-3">${obat.satuan}</td>
+                        <td class="p-3 text-green-600 font-bold">Rp${obat.harga.toLocaleString()}</td>
+                        <td class="p-3">
+                            <button onclick="hapusObat(${obat.id})" class="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-700 text-sm">
+                                Hapus
+                            </button>
+                        </td>
+                    </tr>
+                `;
+            });
+        }
+
+        // Jalankan fungsi saat halaman dibuka
+        muatData();
+
+        async function tambahObat() {
+            const nama = document.getElementById('in-nama').value;
+            const stok = document.getElementById('in-stok').value;
+            const satuan = document.getElementById('in-satuan').value;
+            const harga = document.getElementById('in-harga').value;
+
+            // Mengirim data ke server Python
+            await fetch(`http://127.0.0.1:8888/tambah-obat?nama=${nama}&stok=${stok}&satuan=${satuan}&harga=${harga}`, {
+                method: 'POST'
+            });
+
+            // Bersihkan input dan refresh tabel
+            document.getElementById('in-nama').value = '';
+            document.getElementById('in-stok').value = '';
+            document.getElementById('in-satuan').value = '';
+            document.getElementById('in-harga').value = '';
+            muatData(); 
+            alert("Obat berhasil ditambah!");
+        }
+
+        async function hapusObat(id) {
+            if (confirm("Apakah Anda yakin ingin menghapus obat ini?")) {
+                await fetch(`http://127.0.0.1:8888/hapus-obat/${id}`, {
+                    method: 'DELETE'
+                });
+                muatData(); // Refresh tabel setelah hapus
+            }
+        }
+    </script>
+</body>
+</html>

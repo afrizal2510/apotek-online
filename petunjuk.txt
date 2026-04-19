@@ -1,0 +1,31 @@
+ApotekOnline
+
+
+==> aktivasi env :
+
+.\env\Scripts\activate
+
+
+==> jika merah/error saat menjalankan env activate ketik ini di terminal :
+
+Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope Process
+
+==> menyalakan mesin online:
+
+uvicorn main:app --reload
+
+
+==> akun supabase :
+
+email : afrizal490@gmail.com	
+pass  : Tanimba89##
+
+==> conection string (supabase) :
+
+postgresql://postgres:[YOUR-PASSWORD]@db.yqkfjfmxlrquwwgkvlda.supabase.co:5432/postgres
+
+==> akun GitHub :
+
+email : afrizalrifai2510@gmail.com
+pass  : Tanimba89##
+username : afrizal2510
